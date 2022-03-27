@@ -1,6 +1,7 @@
 import { brand } from '@helpers/brand';
 import { ButtonReset } from '@helpers/global';
-import grid from '@helpers/gridConstants';
+import grid, { gridVariants } from '@helpers/gridConstants';
+import { from, Device } from '@helpers/media';
 import { scaleFadeIn } from '@helpers/variants';
 import { motion, Variants } from 'framer-motion';
 import styled, { css } from 'styled-components';
@@ -83,14 +84,23 @@ const Button = styled.button.attrs({ type: 'button' })`
 `;
 
 const LogoCard = styled.div`
-	width: 300px;
-	height: 300px;
+	width: ${grid.item.mobile.width + grid.gap / 2}px;
+	height: ${grid.item.mobile.height + grid.gap / 2}px;
 	padding: 24px 28px;
+	box-sizing: border-box;
+
+	position: relative;
+	z-index: 1;
 
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+
+	@media ${from(Device.Tablet)} {
+		width: ${grid.item.width + grid.gap / 2}px;
+		height: ${grid.item.height + grid.gap / 2}px;
+	}
 `;
 
 const Logo = styled.div`
@@ -115,13 +125,18 @@ const Description = styled.p`
 `;
 
 const Item = styled.div`
-	width: 310px;
-	height: 310px;
+	width: ${grid.item.mobile.width + grid.gap / 2}px;
+	height: ${grid.item.mobile.height + grid.gap / 2}px;
 	padding: 10px;
 	box-sizing: border-box;
 
 	position: relative;
 	z-index: 1;
+
+	@media ${from(Device.Tablet)} {
+		width: ${grid.item.width + grid.gap / 2}px;
+		height: ${grid.item.height + grid.gap / 2}px;
+	}
 `;
 
 const ImagePlaceholder = styled.div.attrs(
@@ -161,44 +176,55 @@ const ImagePlaceholder = styled.div.attrs(
 
 const GridConstraints = styled(motion.div)`
 	position: absolute;
-	top: calc(50% - ${(grid.width * 2 - grid.item.width) / 2}px);
-	left: calc(50% - ${(grid.height * 2 - grid.item.height) / 2}px);
+	top: calc(50% - ${(grid.mobile.width * 2 - grid.item.mobile.width) / 2}px);
+	left: calc(50% - ${(grid.mobile.height * 2 - grid.item.mobile.height) / 2}px);
 
-	width: ${grid.width * 2 - grid.item.width}px;
-	height: ${grid.height * 2 - grid.item.height}px;
+	width: ${grid.mobile.width * 2 - grid.item.mobile.width}px;
+	height: ${grid.mobile.height * 2 - grid.item.mobile.height}px;
+
+	@media ${from(Device.Tablet)} {
+		top: calc(50% - ${(grid.width * 2 - grid.item.width) / 2}px);
+		left: calc(50% - ${(grid.height * 2 - grid.item.height) / 2}px);
+
+		width: ${grid.width * 2 - grid.item.width}px;
+		height: ${grid.height * 2 - grid.item.height}px;
+	}
 `;
 
-const variants: Variants = {
-	idle: {
-		x: -310,
-		y: 310,
-	},
-	center: {
-		x: 0,
-		y: 0,
-	},
-};
-
 const Grid = styled(motion.div).attrs({
-	variants: variants,
+	variants: gridVariants,
 	transition: {
 		duration: 0.6,
 	},
 })`
 	position: absolute;
-	top: calc(50% - ${grid.height / 2}px);
-	left: calc(50% - ${grid.width / 2}px);
+	top: calc(50% - ${grid.mobile.height / 2}px);
+	left: calc(50% - ${grid.mobile.width / 2}px);
 
 	display: grid;
 	grid-template-columns: repeat(
 		${grid.columns},
-		${grid.item.width + grid.gap / 2}px
+		${grid.item.mobile.width + grid.gap / 2}px
 	);
 	grid-template-rows: repeat(
 		${grid.rows},
-		${grid.item.height + grid.gap / 2}px
+		${grid.item.mobile.height + grid.gap / 2}px
 	);
 	padding: ${grid.gap / 2}px;
+
+	@media ${from(Device.Tablet)} {
+		top: calc(50% - ${grid.height / 2}px);
+		left: calc(50% - ${grid.width / 2}px);
+
+		grid-template-columns: repeat(
+			${grid.columns},
+			${grid.item.width + grid.gap / 2}px
+		);
+		grid-template-rows: repeat(
+			${grid.rows},
+			${grid.item.height + grid.gap / 2}px
+		);
+	}
 `;
 
 export const HomePageStyles = {

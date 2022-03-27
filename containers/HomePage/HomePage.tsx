@@ -1,16 +1,34 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { HomePageStyles as S } from './HomePage.styles';
 import { AnimatePresence } from 'framer-motion';
 import grid from '@helpers/gridConstants';
 
 const HomePage: NextPage = () => {
 	const [isInstructionsOpen, setIsInstructionsOpen] = useState(true);
-	const mockImageArray = new Array(grid.columns * grid.rows).fill(1);
-	const [isCenter, setIsCenter] = useState(false);
+	const [isDragging, setIsDragging] = useState(false);
+
+	let mockImageArray = new Array(grid.columns * grid.rows).fill(1);
+	const [currentItemIndex, setCurrentItemIndex] = useState(
+		(grid.columns * grid.rows) / 2
+	);
 
 	const constraintsRef = useRef(null);
+
+	useMemo(() => {
+		mockImageArray = mockImageArray.map(() => {
+			const red = Math.ceil(Math.random() * 255);
+			const blue = Math.ceil(Math.random() * 255);
+			const green = Math.ceil(Math.random() * 255);
+
+			return {
+				red,
+				blue,
+				green,
+			};
+		});
+	}, []);
 
 	return (
 		<div>
@@ -60,11 +78,11 @@ const HomePage: NextPage = () => {
 					)}
 				</AnimatePresence>
 
-				<S.GridConstraints ref={constraintsRef} />
+				<S.GridConstraints ref={constraintsRef} draggable={false} />
 				<S.Grid
 					drag
 					dragConstraints={constraintsRef}
-					animate={isCenter ? 'idle' : 'center'}
+					animate={`item_${currentItemIndex}`}
 					dragTransition={{
 						bounceStiffness: 600,
 						bounceDamping: 80,
@@ -72,21 +90,38 @@ const HomePage: NextPage = () => {
 					}}
 				>
 					{mockImageArray.map((x, index) => {
-						const red = Math.ceil(Math.random() * 255);
-						const blue = Math.ceil(Math.random() * 255);
-						const green = Math.ceil(Math.random() * 255);
+						if (index === grid.centerItem.index) {
+							return (
+								<S.LogoCard key={`item-${index}`}>
+									<S.Logo>
+										<strong>arte</strong>ficial
+									</S.Logo>
+
+									<S.Description>
+										Um projeto que reúne imagens geradas através de inteligência
+										artificial e atreladas a textos que resignificam as obras.
+									</S.Description>
+
+									<S.Button>saiba mais</S.Button>
+								</S.LogoCard>
+							);
+						}
 
 						return (
 							<S.Item key={`item-${index}`}>
 								<S.ImagePlaceholder
-									r={red}
-									b={blue}
-									g={green}
+									r={x.red}
+									b={x.blue}
+									g={x.green}
 									draggable={false}
-									onClick={() => {
-										if (index === 144) {
-											setIsCenter((curr) => !curr);
+									onMouseDown={() => setIsDragging(false)}
+									onMouseMove={() => setIsDragging(true)}
+									onMouseUp={() => {
+										if (!isDragging) {
+											setCurrentItemIndex(index);
 										}
+
+										setIsDragging(false);
 									}}
 								>
 									{index}
@@ -95,19 +130,6 @@ const HomePage: NextPage = () => {
 						);
 					})}
 				</S.Grid>
-
-				{/* <S.LogoCard>
-					<S.Logo>
-						<strong>arte</strong>ficial
-					</S.Logo>
-
-					<S.Description>
-						Um projeto que reúne imagens geradas através de inteligência
-						artificial e atreladas a textos que resignificam as obras.
-					</S.Description>
-
-					<S.Button>saiba mais</S.Button>
-				</S.LogoCard> */}
 			</S.Container>
 		</div>
 	);
