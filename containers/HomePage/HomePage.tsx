@@ -2,12 +2,39 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useMemo, useRef, useState } from 'react';
 import { HomePageStyles as S } from './HomePage.styles';
-import { AnimatePresence } from 'framer-motion';
+import {
+	AnimatePresence,
+	useMotionTemplate,
+	useMotionValue,
+	useTransform,
+} from 'framer-motion';
 import grid from '@helpers/gridConstants';
+import Modal from '@components/Modal/Modal';
 
 const HomePage: NextPage = () => {
 	const [isInstructionsOpen, setIsInstructionsOpen] = useState(true);
+	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isDragging, setIsDragging] = useState(false);
+
+	const normalizedMouseX = useMotionValue(0.5);
+	const normalizedMouseY = useMotionValue(0.5);
+
+	const spotlightX = useTransform(normalizedMouseX, [0, 1], [0, 100]);
+	const spotlightY = useTransform(normalizedMouseY, [0, 1], [0, 100]);
+
+	const background = useMotionTemplate`radial-gradient(
+		circle at ${spotlightX}% ${spotlightY}%,
+		rgba(0, 0, 0, 0) 0,
+		rgba(0, 0, 0, 1) min(1000px, 100%)
+	)`;
+
+	function handleMouse(event: any) {
+		const rect = event.currentTarget.getBoundingClientRect();
+
+		normalizedMouseX.set(event.pageX / rect.width);
+		normalizedMouseY.set(event.pageY / rect.height);
+		console.log({ pageX: event.pageX, pageY: event.pageY, rect: rect });
+	}
 
 	let mockImageArray = new Array(grid.columns * grid.rows).fill(1);
 	const [currentItemIndex, setCurrentItemIndex] = useState(
@@ -30,6 +57,10 @@ const HomePage: NextPage = () => {
 		});
 	}, []);
 
+	// FIXME: remove this
+	const lorem =
+		'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quisquam pariatur, aperiam nam necessitatibus alias, quia ab illo nihil debitis consequuntur aliquam repellendus, perspiciatis illum maxime quo. Fuga libero alias perferendis!';
+
 	return (
 		<div>
 			<Head>
@@ -44,12 +75,14 @@ const HomePage: NextPage = () => {
 					crossOrigin=""
 				/>
 				<link
-					href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;700&display=swap"
+					href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&display=swap"
 					rel="stylesheet"
 				></link>
 			</Head>
 
-			<S.Container>
+			<S.Container onMouseMove={handleMouse}>
+				<S.CursorFog style={{ background }} />
+
 				<AnimatePresence exitBeforeEnter>
 					{isInstructionsOpen && (
 						<S.Overlay key="instructions-overlay">
@@ -74,6 +107,17 @@ const HomePage: NextPage = () => {
 							<S.Button onClick={() => setIsInstructionsOpen(false)}>
 								ok
 							</S.Button>
+						</S.Overlay>
+					)}
+
+					{isModalOpen && (
+						<S.Overlay key="item-modal-overlay">
+							<Modal
+								id={`modal-item-${currentItemIndex}`}
+								imageUrl=""
+								description={lorem}
+								onClose={() => setIsModalOpen(false)}
+							/>
 						</S.Overlay>
 					)}
 				</AnimatePresence>
@@ -119,6 +163,10 @@ const HomePage: NextPage = () => {
 									onMouseUp={() => {
 										if (!isDragging) {
 											setCurrentItemIndex(index);
+
+											setTimeout(() => {
+												setIsModalOpen(true);
+											}, 500);
 										}
 
 										setIsDragging(false);

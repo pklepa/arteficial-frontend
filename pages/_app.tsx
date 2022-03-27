@@ -12,6 +12,10 @@ const GlobalStyle = createGlobalStyle`
     background-color: ${brand.black};
     color: ${brand.white};
   }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
 `;
 
 function MyApp({ Component, pageProps }: AppProps) {

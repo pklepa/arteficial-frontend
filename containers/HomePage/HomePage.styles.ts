@@ -1,7 +1,7 @@
 import { brand } from '@helpers/brand';
 import { ButtonReset } from '@helpers/global';
 import grid, { gridVariants } from '@helpers/gridConstants';
-import { from, Device } from '@helpers/media';
+import { from, Device, until } from '@helpers/media';
 import { scaleFadeIn } from '@helpers/variants';
 import { motion, Variants } from 'framer-motion';
 import styled, { css } from 'styled-components';
@@ -11,6 +11,24 @@ const Container = styled(motion.div)`
 	height: 100vh;
 	overflow: hidden;
 	position: relative;
+
+	@media ${until(Device.Tablet)} {
+		&::after {
+			content: '';
+			position: fixed;
+			z-index: 2;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			background: radial-gradient(
+				circle,
+				rgba(0, 0, 0, 0) 0%,
+				rgba(0, 0, 0, 1) 100%
+			);
+			pointer-events: none;
+		}
+	}
 `;
 
 const Overlay = styled(motion.div).attrs({
@@ -227,6 +245,20 @@ const Grid = styled(motion.div).attrs({
 	}
 `;
 
+const CursorFog = styled(motion.div)`
+	position: fixed;
+	z-index: 2;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+
+	@media ${until(Device.Tablet)} {
+		display: none;
+	}
+`;
+
 export const HomePageStyles = {
 	Container,
 	Overlay,
@@ -240,4 +272,5 @@ export const HomePageStyles = {
 	Grid,
 	Item,
 	ImagePlaceholder,
+	CursorFog,
 };
