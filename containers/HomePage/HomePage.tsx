@@ -2,11 +2,12 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRef, useState } from 'react';
 import { HomePageStyles as S } from './HomePage.styles';
-import { AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
+import grid from '@helpers/gridConstants';
 
 const HomePage: NextPage = () => {
 	const [isInstructionsOpen, setIsInstructionsOpen] = useState(true);
-	const mockImageArray = new Array(121).fill(1);
+	const mockImageArray = new Array(grid.columns * grid.rows).fill(1);
 	const [isCenter, setIsCenter] = useState(false);
 
 	const constraintsRef = useRef(null);
@@ -83,7 +84,7 @@ const HomePage: NextPage = () => {
 									g={green}
 									draggable={false}
 									onClick={() => {
-										if (index === 60) {
+										if (index === 144) {
 											setIsCenter((curr) => !curr);
 										}
 									}}

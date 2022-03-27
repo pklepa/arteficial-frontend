@@ -1,5 +1,6 @@
 import { brand } from '@helpers/brand';
 import { ButtonReset } from '@helpers/global';
+import grid from '@helpers/gridConstants';
 import { scaleFadeIn } from '@helpers/variants';
 import { motion, Variants } from 'framer-motion';
 import styled, { css } from 'styled-components';
@@ -36,7 +37,7 @@ const instructionsVariants: Variants = {
 		transition: { duration: 0.6 },
 	},
 	visible: {
-		filter: 'none',
+		filter: 'blur(0px)',
 		transition: { duration: 0.6 },
 	},
 };
@@ -157,24 +158,14 @@ const ImagePlaceholder = styled.div.attrs(
 		}
 	}
 `;
-const GRID_COLUMNS = 11;
-const GRID_ROWS = 11;
-const GRID_GAP = 20;
-const ITEM_WIDTH = 300;
-const ITEM_HEIGHT = 300;
-
-const gridDimensions = {
-	width: GRID_COLUMNS * (ITEM_WIDTH + GRID_GAP / 2) + GRID_GAP,
-	height: GRID_ROWS * (ITEM_HEIGHT + GRID_GAP / 2) + GRID_GAP,
-};
 
 const GridConstraints = styled(motion.div)`
 	position: absolute;
-	top: calc(50% - ${(gridDimensions.width * 2 - ITEM_WIDTH) / 2}px);
-	left: calc(50% - ${(gridDimensions.height * 2 - ITEM_HEIGHT) / 2}px);
+	top: calc(50% - ${(grid.width * 2 - grid.item.width) / 2}px);
+	left: calc(50% - ${(grid.height * 2 - grid.item.height) / 2}px);
 
-	width: ${gridDimensions.width * 2 - ITEM_WIDTH}px;
-	height: ${gridDimensions.height * 2 - ITEM_HEIGHT}px;
+	width: ${grid.width * 2 - grid.item.width}px;
+	height: ${grid.height * 2 - grid.item.height}px;
 `;
 
 const variants: Variants = {
@@ -195,13 +186,19 @@ const Grid = styled(motion.div).attrs({
 	},
 })`
 	position: absolute;
-	top: calc(50% - ${gridDimensions.height / 2}px);
-	left: calc(50% - ${gridDimensions.width / 2}px);
+	top: calc(50% - ${grid.height / 2}px);
+	left: calc(50% - ${grid.width / 2}px);
 
 	display: grid;
-	grid-template-columns: repeat(11, ${ITEM_WIDTH + GRID_GAP / 2}px);
-	grid-template-rows: repeat(11, ${ITEM_HEIGHT + GRID_GAP / 2}px);
-	padding: 10px;
+	grid-template-columns: repeat(
+		${grid.columns},
+		${grid.item.width + grid.gap / 2}px
+	);
+	grid-template-rows: repeat(
+		${grid.rows},
+		${grid.item.height + grid.gap / 2}px
+	);
+	padding: ${grid.gap / 2}px;
 `;
 
 export const HomePageStyles = {
