@@ -37,9 +37,10 @@ const Background = styled.div`
 
 const ImageWrapper = styled.div`
 	width: 100%;
-	/* height: 100%; */
 	height: 600px;
-	background-color: indigo;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 `;
 
 const Description = styled.p`
@@ -50,7 +51,7 @@ const Description = styled.p`
 	color: ${brand.black};
 `;
 
-export const ModalStyles = {
+export const ImageModalStyles = {
 	Container,
 	Modal,
 	Background,

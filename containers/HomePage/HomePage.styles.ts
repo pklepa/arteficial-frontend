@@ -86,22 +86,7 @@ const InstructionText = styled.span<{ isDimmed?: boolean }>`
 		`}
 `;
 
-const Button = styled.button.attrs({ type: 'button' })`
-	${ButtonReset};
-	border: 1px solid ${brand.white};
-	border-radius: 8px;
-	padding: 8px 24px;
-	min-width: 115px;
-	color: ${brand.white};
-	margin-top: 16px;
-
-	font-size: 14px;
-	font-weight: 700;
-	line-height: 1em;
-	text-align: center;
-`;
-
-const LogoCard = styled.div`
+const LogoCard = styled.div<{ isHidden?: boolean }>`
 	width: ${grid.item.mobile.width + grid.gap / 2}px;
 	height: ${grid.item.mobile.height + grid.gap / 2}px;
 	padding: 24px 28px;
@@ -114,6 +99,25 @@ const LogoCard = styled.div`
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+
+	&::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background-color: ${brand.black};
+		z-index: 3;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 0.3s ease-out;
+	}
+
+	${({ isHidden }) =>
+		isHidden &&
+		css`
+			&::after {
+				opacity: 1;
+			}
+		`}
 
 	@media ${from(Device.Tablet)} {
 		width: ${grid.item.width + grid.gap / 2}px;
@@ -150,6 +154,16 @@ const Item = styled.div`
 
 	position: relative;
 	z-index: 1;
+
+	&::after {
+		content: '';
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		z-index: 2;
+	}
 
 	@media ${from(Device.Tablet)} {
 		width: ${grid.item.width + grid.gap / 2}px;
@@ -264,7 +278,6 @@ export const HomePageStyles = {
 	Overlay,
 	InstructionsWrapper,
 	InstructionText,
-	Button,
 	LogoCard,
 	Logo,
 	Description,

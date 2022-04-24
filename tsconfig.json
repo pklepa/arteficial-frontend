@@ -18,7 +18,9 @@
 		"paths": {
 			"@containers/*": ["containers/*"],
 			"@components/*": ["components/*"],
-			"@helpers/*": ["helpers/*"]
+			"@helpers/*": ["helpers/*"],
+			"@img/*": ["img/*"],
+			"@mock/*": ["mock/*"]
 		}
 	},
 	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

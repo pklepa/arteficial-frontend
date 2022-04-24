@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import { useMemo, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { HomePageStyles as S } from './HomePage.styles';
 import {
 	AnimatePresence,
@@ -9,11 +9,23 @@ import {
 	useTransform,
 } from 'framer-motion';
 import grid from '@helpers/gridConstants';
-import Modal from '@components/Modal/Modal';
+import ImageModal from '@components/ImageModal/ImageModal';
+import mockItemsCollection from '@mock/mockItemsCollection';
+import Image from 'next/image';
+import AboutModal from '@components/AboutModal/AboutModal';
+import mockTexts from '@mock/mockTexts';
+import Button from '@components/Button/Button';
+
+export type ImagePlaceholderType = {
+	red: number;
+	green: number;
+	blue: number;
+};
 
 const HomePage: NextPage = () => {
-	const [isInstructionsOpen, setIsInstructionsOpen] = useState(true);
-	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [isInstructionsOpen, setIsInstructionsOpen] = useState(false); // FIXME: precisa comecar em true
+	const [isAboutModalOpen, setIsAboutModalOpen] = useState(true); // FIXME: precisa comeecar em false
+	const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 	const [isDragging, setIsDragging] = useState(false);
 
 	const normalizedMouseX = useMotionValue(0.5);
@@ -33,29 +45,14 @@ const HomePage: NextPage = () => {
 
 		normalizedMouseX.set(event.pageX / rect.width);
 		normalizedMouseY.set(event.pageY / rect.height);
-		console.log({ pageX: event.pageX, pageY: event.pageY, rect: rect });
+		console.log({ pageX: event.pageX, pageY: event.pageY, rect: rect }); // FIXME: remove this
 	}
 
-	let mockImageArray = new Array(grid.columns * grid.rows).fill(1);
 	const [currentItemIndex, setCurrentItemIndex] = useState(
 		(grid.columns * grid.rows) / 2
 	);
 
 	const constraintsRef = useRef(null);
-
-	useMemo(() => {
-		mockImageArray = mockImageArray.map(() => {
-			const red = Math.ceil(Math.random() * 255);
-			const blue = Math.ceil(Math.random() * 255);
-			const green = Math.ceil(Math.random() * 255);
-
-			return {
-				red,
-				blue,
-				green,
-			};
-		});
-	}, []);
 
 	// FIXME: remove this
 	const lorem =
@@ -81,6 +78,7 @@ const HomePage: NextPage = () => {
 			</Head>
 
 			<S.Container onMouseMove={handleMouse}>
+				{/* TODO: Readd cursor fog */}
 				<S.CursorFog style={{ background }} />
 
 				<AnimatePresence exitBeforeEnter>
@@ -104,20 +102,37 @@ const HomePage: NextPage = () => {
 								</S.InstructionText>
 							</S.InstructionsWrapper>
 
-							<S.Button onClick={() => setIsInstructionsOpen(false)}>
-								ok
-							</S.Button>
+							<Button text="ok" onClick={() => setIsInstructionsOpen(false)} />
 						</S.Overlay>
 					)}
 
-					{isModalOpen && (
+					{isAboutModalOpen && (
+						<AboutModal
+							id="about-modal"
+							text={mockTexts.aboutModalMainText}
+							buttonText={mockTexts.aboutModalButtonText}
+							onClose={() => setIsAboutModalOpen(false)}
+							key="about-modal"
+						/>
+					)}
+
+					{isImageModalOpen && (
 						<S.Overlay key="item-modal-overlay">
-							<Modal
+							<ImageModal
+								id={mockItemsCollection[currentItemIndex].id}
+								imageUrl={mockItemsCollection[currentItemIndex].imageUrl}
+								description={mockItemsCollection[currentItemIndex].text}
+								blurImageUrl={
+									mockItemsCollection[currentItemIndex].blurImageUrl
+								}
+								onClose={() => setIsImageModalOpen(false)}
+							/>
+							{/* <Modal
 								id={`modal-item-${currentItemIndex}`}
 								imageUrl=""
 								description={lorem}
 								onClose={() => setIsModalOpen(false)}
-							/>
+							/> */}
 						</S.Overlay>
 					)}
 				</AnimatePresence>
@@ -132,11 +147,12 @@ const HomePage: NextPage = () => {
 						bounceDamping: 80,
 						power: 0.5,
 					}}
+					// dragMomentum={false}
 				>
-					{mockImageArray.map((x, index) => {
+					{mockItemsCollection.map((x, index) => {
 						if (index === grid.centerItem.index) {
 							return (
-								<S.LogoCard key={`item-${index}`}>
+								<S.LogoCard key={x.id} isHidden={isInstructionsOpen}>
 									<S.Logo>
 										<strong>arte</strong>ficial
 									</S.Logo>
@@ -146,14 +162,33 @@ const HomePage: NextPage = () => {
 										artificial e atreladas a textos que resignificam as obras.
 									</S.Description>
 
-									<S.Button>saiba mais</S.Button>
+									<Button
+										text="saiba mais"
+										onClick={() => setIsAboutModalOpen(true)}
+									/>
 								</S.LogoCard>
 							);
 						}
 
 						return (
-							<S.Item key={`item-${index}`}>
-								<S.ImagePlaceholder
+							<S.Item
+								key={x.id}
+								draggable={false}
+								onMouseDown={() => setIsDragging(false)}
+								onMouseMove={() => setIsDragging(true)}
+								onMouseUp={() => {
+									if (!isDragging) {
+										setCurrentItemIndex(index);
+
+										setTimeout(() => {
+											setIsImageModalOpen(true);
+										}, 500);
+									}
+
+									setIsDragging(false);
+								}}
+							>
+								{/* <S.ImagePlaceholder
 									r={x.red}
 									b={x.blue}
 									g={x.green}
@@ -173,7 +208,18 @@ const HomePage: NextPage = () => {
 									}}
 								>
 									{index}
-								</S.ImagePlaceholder>
+								</S.ImagePlaceholder> */}
+
+								<Image
+									src={x.imageUrl}
+									width={400}
+									height={400}
+									draggable={false}
+									quality={50}
+									placeholder="blur"
+									loading="eager"
+									blurDataURL={x.blurImageUrl}
+								/>
 							</S.Item>
 						);
 					})}
