@@ -34,7 +34,9 @@ function ImageModal({
 					/>
 				</S.ImageWrapper>
 
-				<S.Description>{description}</S.Description>
+				<S.Description>
+					<div dangerouslySetInnerHTML={{ __html: description }} />
+				</S.Description>
 			</S.Modal>
 		</S.Container>
 	);

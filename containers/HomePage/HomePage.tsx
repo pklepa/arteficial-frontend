@@ -115,12 +115,6 @@ export default function HomePage({ items }: HomePageProps) {
 								blurImageUrl={items[currentItemIndex].blurImageUrl ?? ''}
 								onClose={() => setIsImageModalOpen(false)}
 							/>
-							{/* <Modal
-								id={`modal-item-${currentItemIndex}`}
-								imageUrl=""
-								description={lorem}
-								onClose={() => setIsModalOpen(false)}
-							/> */}
 						</S.Overlay>
 					)}
 				</AnimatePresence>
