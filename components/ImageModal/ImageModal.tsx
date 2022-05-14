@@ -3,7 +3,7 @@ import React from 'react';
 import { ImageModalStyles as S } from './ImageModal.styles';
 
 type ImageModalProps = {
-	id: string;
+	id: string | number;
 	imageUrl: string;
 	description: string;
 	blurImageUrl: string;

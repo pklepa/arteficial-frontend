@@ -1,4 +1,4 @@
-import type { NextPage } from 'next';
+import type { GetStaticProps } from 'next';
 import Head from 'next/head';
 import { useRef, useState } from 'react';
 import { HomePageStyles as S } from './HomePage.styles';
@@ -10,21 +10,16 @@ import {
 } from 'framer-motion';
 import grid from '@helpers/gridConstants';
 import ImageModal from '@components/ImageModal/ImageModal';
-import mockItemsCollection from '@mock/mockItemsCollection';
 import Image from 'next/image';
 import AboutModal from '@components/AboutModal/AboutModal';
 import mockTexts from '@mock/mockTexts';
 import Button from '@components/Button/Button';
+import { HomePageProps, ItemT, ResponseItem } from './HomePage.types';
+// import qs from 'qs';
 
-export type ImagePlaceholderType = {
-	red: number;
-	green: number;
-	blue: number;
-};
-
-const HomePage: NextPage = () => {
-	const [isInstructionsOpen, setIsInstructionsOpen] = useState(false); // FIXME: precisa comecar em true
-	const [isAboutModalOpen, setIsAboutModalOpen] = useState(true); // FIXME: precisa comeecar em false
+export default function HomePage({ items }: HomePageProps) {
+	const [isInstructionsOpen, setIsInstructionsOpen] = useState(true);
+	const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
 	const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 	const [isDragging, setIsDragging] = useState(false);
 
@@ -45,7 +40,6 @@ const HomePage: NextPage = () => {
 
 		normalizedMouseX.set(event.pageX / rect.width);
 		normalizedMouseY.set(event.pageY / rect.height);
-		console.log({ pageX: event.pageX, pageY: event.pageY, rect: rect }); // FIXME: remove this
 	}
 
 	const [currentItemIndex, setCurrentItemIndex] = useState(
@@ -53,10 +47,6 @@ const HomePage: NextPage = () => {
 	);
 
 	const constraintsRef = useRef(null);
-
-	// FIXME: remove this
-	const lorem =
-		'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quisquam pariatur, aperiam nam necessitatibus alias, quia ab illo nihil debitis consequuntur aliquam repellendus, perspiciatis illum maxime quo. Fuga libero alias perferendis!';
 
 	return (
 		<div>
@@ -119,12 +109,10 @@ const HomePage: NextPage = () => {
 					{isImageModalOpen && (
 						<S.Overlay key="item-modal-overlay">
 							<ImageModal
-								id={mockItemsCollection[currentItemIndex].id}
-								imageUrl={mockItemsCollection[currentItemIndex].imageUrl}
-								description={mockItemsCollection[currentItemIndex].text}
-								blurImageUrl={
-									mockItemsCollection[currentItemIndex].blurImageUrl
-								}
+								id={items[currentItemIndex].id}
+								imageUrl={items[currentItemIndex].imageUrl ?? ''}
+								description={items[currentItemIndex].description ?? ''}
+								blurImageUrl={items[currentItemIndex].blurImageUrl ?? ''}
 								onClose={() => setIsImageModalOpen(false)}
 							/>
 							{/* <Modal
@@ -149,10 +137,10 @@ const HomePage: NextPage = () => {
 					}}
 					// dragMomentum={false}
 				>
-					{mockItemsCollection.map((x, index) => {
+					{items.map((x, index) => {
 						if (index === grid.centerItem.index) {
 							return (
-								<S.LogoCard key={x.id} isHidden={isInstructionsOpen}>
+								<S.LogoCard key={'logo-card'} isHidden={isInstructionsOpen}>
 									<S.Logo>
 										<strong>arte</strong>ficial
 									</S.Logo>
@@ -172,7 +160,7 @@ const HomePage: NextPage = () => {
 
 						return (
 							<S.Item
-								key={x.id}
+								key={`item-card-${x.id}`}
 								draggable={false}
 								onMouseDown={() => setIsDragging(false)}
 								onMouseMove={() => setIsDragging(true)}
@@ -211,14 +199,14 @@ const HomePage: NextPage = () => {
 								</S.ImagePlaceholder> */}
 
 								<Image
-									src={x.imageUrl}
+									src={x.imageUrl ?? ''}
 									width={400}
 									height={400}
 									draggable={false}
 									quality={50}
 									placeholder="blur"
 									loading="eager"
-									blurDataURL={x.blurImageUrl}
+									blurDataURL={x.blurImageUrl ?? ''}
 								/>
 							</S.Item>
 						);
@@ -227,6 +215,23 @@ const HomePage: NextPage = () => {
 			</S.Container>
 		</div>
 	);
-};
+}
 
-export default HomePage;
+export const getStaticProps: GetStaticProps = async () => {
+	const baseUrl = 'https://arteficial-dashboard.herokuapp.com';
+	const res = await fetch(`${baseUrl}/api/arteficial-items?populate=*`);
+	const { data } = await res.json();
+
+	const items: ItemT = data.map((x: ResponseItem) => ({
+		id: x.id,
+		description: x.attributes.Description ?? null,
+		imageUrl: x.attributes['Image'].data.attributes.url ?? null,
+		blurImageUrl: x.attributes['Image'].data.attributes.url ?? null,
+	}));
+
+	return {
+		props: {
+			items,
+		},
+	};
+};
