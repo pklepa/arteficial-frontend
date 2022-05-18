@@ -6,11 +6,23 @@ type MockTextsT = {
 const mockTexts: MockTextsT = {
 	aboutModalMainText: `
     <p>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      As imagens aqui presentes foram geradas através de uma plataforma de criaçao de imagens com tecnologias de Inteligência Artificial e Aprendizado da máquina utilizando a plataforma ArtBreeder. Mais de 2800 imagens foram criadas para esse projeto através desta tecnologia.
     </p>
     
     <p>
-      Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+      O resultado é essa galeria de 288 imagens com textos que unem o potêncial das máquinas com o potêncial humano para criar experiências e poéticas híbridas entre o homem e a máquina.
+    </p>
+
+    <br/>
+    <br/>
+
+    <p>
+      <strong>Pedro Nonino: Produção</strong>
+      <strong>Lucas Klepa: UI/UX Design</strong>
+      <strong>Pedro Klepa: Desenvolvimento</strong>
+      <strong>Aimée Neumann: Curadoria e Redação</strong>
+      <strong>Vitor Inacio Paiva: Curadoria e Redação</strong>
+      <strong>Sasa Chico: Curadoria e Redação</strong>
     </p>
   `,
 

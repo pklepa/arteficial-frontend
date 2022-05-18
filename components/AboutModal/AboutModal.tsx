@@ -22,6 +22,12 @@ function AboutModal({ id, text, buttonText, onClose }: AboutModalProps) {
 
 				<S.MainText dangerouslySetInnerHTML={{ __html: text }} />
 
+				<S.LogoLondrina
+					src="/logo-org-londrina.png"
+					alt="Prefeitura de Londrina"
+					sizes="176px"
+				/>
+
 				<Button text={buttonText} onClick={onClose} />
 			</S.Modal>
 		</S.Container>

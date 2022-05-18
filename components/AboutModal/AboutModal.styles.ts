@@ -28,7 +28,7 @@ const Modal = styled.div`
 	flex-direction: column;
 	align-items: center;
 	max-width: 1000px;
-	padding: 24px;
+	padding: 32px 24px;
 	width: 100%;
 	height: 100%;
 	margin: 0 auto;
@@ -64,6 +64,15 @@ const MainText = styled.div`
 	color: ${brand.white};
 	text-align: center;
 	margin: 32px;
+
+	strong {
+		display: block;
+	}
+`;
+
+const LogoLondrina = styled.img`
+	width: 176px;
+	margin-bottom: 32px;
 `;
 
 export const AboutModalStyles = {
@@ -72,4 +81,5 @@ export const AboutModalStyles = {
 	Background,
 	LogoWrapper,
 	MainText,
+	LogoLondrina,
 };

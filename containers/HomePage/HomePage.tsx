@@ -15,7 +15,7 @@ import AboutModal from '@components/AboutModal/AboutModal';
 import mockTexts from '@mock/mockTexts';
 import Button from '@components/Button/Button';
 import { HomePageProps, ItemT, ResponseItem } from './HomePage.types';
-// import qs from 'qs';
+import shuffle from '@helpers/shuffle';
 
 export default function HomePage({ items }: HomePageProps) {
 	const [isInstructionsOpen, setIsInstructionsOpen] = useState(true);
@@ -68,7 +68,6 @@ export default function HomePage({ items }: HomePageProps) {
 			</Head>
 
 			<S.Container onMouseMove={handleMouse}>
-				{/* TODO: Readd cursor fog */}
 				<S.CursorFog style={{ background }} />
 
 				<AnimatePresence exitBeforeEnter>
@@ -170,28 +169,6 @@ export default function HomePage({ items }: HomePageProps) {
 									setIsDragging(false);
 								}}
 							>
-								{/* <S.ImagePlaceholder
-									r={x.red}
-									b={x.blue}
-									g={x.green}
-									draggable={false}
-									onMouseDown={() => setIsDragging(false)}
-									onMouseMove={() => setIsDragging(true)}
-									onMouseUp={() => {
-										if (!isDragging) {
-											setCurrentItemIndex(index);
-
-											setTimeout(() => {
-												setIsModalOpen(true);
-											}, 500);
-										}
-
-										setIsDragging(false);
-									}}
-								>
-									{index}
-								</S.ImagePlaceholder> */}
-
 								<Image
 									src={x.imageUrl ?? ''}
 									width={400}
@@ -216,12 +193,21 @@ export const getStaticProps: GetStaticProps = async () => {
 	const res = await fetch(`${baseUrl}/api/arteficial-items?populate=*`);
 	const { data } = await res.json();
 
-	const items: ItemT = data.map((x: ResponseItem) => ({
+	const items: ItemT[] = data.map((x: ResponseItem) => ({
 		id: x.id,
 		description: x.attributes.Description ?? null,
 		imageUrl: x.attributes['Image'].data.attributes.url ?? null,
 		blurImageUrl: x.attributes['Image'].data.attributes.url ?? null,
 	}));
+
+	shuffle(items);
+
+	items.splice(grid.centerItem.index, 0, {
+		id: 0,
+		description: '',
+		imageUrl: '',
+		blurImageUrl: '',
+	});
 
 	return {
 		props: {
